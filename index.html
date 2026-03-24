@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitki Dostu | Plant Care</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --leaf: #2e5c2a;
+  --moss: #4a7c45;
+  --mist: #d4e8cc;
+  --amber: #e8a040;
+  --rust: #c0522a;
+  --paper: #faf7f2;
+  --ink: #1a1f1a;
+  --shadow: rgba(30,50,25,0.12);
+  --admin-bg: #0f1a0e;
+  --admin-card: #162214;
+  --admin-border: rgba(74,124,69,0.25);
+  --admin-text: #c8e6c2;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;padding:24px 16px 60px}
+.wrap{max-width:880px;margin:0 auto}
+.hidden{display:none!important}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:22px;color:var(--leaf);cursor:pointer;user-select:none}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--leaf),var(--moss));border-radius:50% 50% 50% 10%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 6px 16px rgba(46,92,42,0.25)}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.lang-select{appearance:none;background:white;border:1.5px solid var(--mist);border-radius:30px;padding:8px 34px 8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a7c45'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;box-shadow:0 2px 8px var(--shadow)}
+.lang-select:focus{outline:none;border-color:var(--moss)}
+.icon-btn{background:none;border:1.5px solid var(--mist);border-radius:30px;padding:8px 14px;font-size:13px;cursor:pointer;color:var(--moss);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.icon-btn:hover{border-color:var(--moss);color:var(--leaf)}
+.card{background:white;border-radius:24px;padding:32px;box-shadow:0 4px 24px var(--shadow);border:1px solid rgba(212,232,204,0.6);margin-bottom:20px}
+.login-hero{text-align:center;padding-bottom:24px}
+.login-icon{width:76px;height:76px;background:linear-gradient(135deg,var(--leaf),var(--moss));border-radius:50% 50% 50% 10%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 12px 32px rgba(46,92,42,0.28);animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.login-hero h2{font-family:'Playfair Display',serif;font-size:26px;color:var(--leaf);margin-bottom:8px}
+.login-hero p{color:var(--moss);font-size:14px;opacity:.85}
+.field-label{display:block;font-size:11px;font-weight:500;color:var(--moss);letter-spacing:.7px;text-transform:uppercase;margin:14px 0 6px}
+input[type="email"],input[type="tel"],input[type="password"],input[type="text"],textarea{width:100%;padding:13px 16px;border:1.5px solid var(--mist);border-radius:12px;background:var(--paper);font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);transition:all 0.2s}
+textarea{resize:vertical;min-height:90px;line-height:1.5}
+input:focus,textarea:focus{outline:none;border-color:var(--moss);background:white;box-shadow:0 0 0 4px rgba(74,124,69,0.08)}
+.btn{width:100%;padding:15px;border:none;border-radius:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;font-size:15px;transition:all 0.22s;margin-top:12px}
+.btn-primary{background:linear-gradient(135deg,var(--leaf),var(--moss));color:white;box-shadow:0 8px 20px rgba(46,92,42,0.26)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(46,92,42,0.34)}
+.btn-premium{background:linear-gradient(135deg,var(--amber),var(--rust));color:white;box-shadow:0 8px 20px rgba(232,160,64,0.26)}
+.btn-premium:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important}
+.dash-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.dash-greeting{font-family:'Playfair Display',serif;font-size:22px;color:var(--leaf);margin-bottom:6px}
+.membership-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(74,124,69,0.1);color:var(--moss);border-radius:30px;padding:6px 14px;font-size:13px;font-weight:500;border:1px solid rgba(74,124,69,0.2)}
+.membership-badge.premium{background:rgba(232,160,64,0.12);color:var(--rust);border-color:rgba(232,160,64,0.3)}
+.limit-bar{height:6px;background:var(--mist);border-radius:6px;margin-top:10px;overflow:hidden}
+.limit-fill{height:100%;background:linear-gradient(90deg,var(--moss),var(--leaf));border-radius:6px;transition:width 0.4s ease}
+.tab-row{display:flex;gap:4px;margin-bottom:20px;background:var(--paper);border-radius:14px;padding:4px;border:1px solid var(--mist)}
+.tab-btn{flex:1;padding:10px;border:none;border-radius:10px;background:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;color:var(--moss);transition:all 0.18s}
+.tab-btn.active{background:white;color:var(--leaf);box-shadow:0 2px 8px var(--shadow)}
+.analyze-card h3{font-family:'Playfair Display',serif;font-size:19px;color:var(--leaf);margin-bottom:16px}
+.upload-zone{border:2px dashed var(--mist);border-radius:16px;padding:32px 28px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--paper);position:relative;overflow:hidden}
+.upload-zone:hover{border-color:var(--moss);background:rgba(74,124,69,0.04)}
+.upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;margin:0;padding:0}
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-text{font-size:14px;color:var(--moss)}
+.upload-sub{font-size:12px;color:var(--moss);opacity:.6;margin-top:4px}
+#preview{width:100%;max-height:240px;object-fit:contain;border-radius:14px;margin:14px 0 4px;display:none;border:1px solid var(--mist)}
+.diag-result{background:var(--paper);border-radius:16px;padding:20px;margin-top:16px;border:1px solid var(--mist);display:none}
+.diag-result h4{font-family:'Playfair Display',serif;color:var(--leaf);margin-bottom:14px;font-size:17px}
+.diag-section{margin-bottom:14px}
+.diag-section:last-child{margin-bottom:0}
+.diag-section-title{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:var(--moss);margin-bottom:6px}
+.diag-text{font-size:14px;line-height:1.7;color:var(--ink)}
+.care-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.care-item{background:white;border-radius:12px;padding:10px 12px;border:1px solid var(--mist);font-size:13px}
+.care-item-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--moss);margin-bottom:3px}
+.care-item-val{font-weight:500;color:var(--ink);line-height:1.4}
+.care-item.warn{border-color:rgba(232,160,64,0.4);background:rgba(232,160,64,0.06)}
+.care-item.warn .care-item-val{color:#b06010}
+.care-item.danger{border-color:rgba(192,82,42,0.3);background:rgba(192,82,42,0.06)}
+.care-item.danger .care-item-val{color:var(--rust)}
+.care-item.good{border-color:rgba(74,124,69,0.3);background:rgba(74,124,69,0.05)}
+.care-item.good .care-item-val{color:var(--moss)}
+.section-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--leaf);margin:8px 0 16px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.plant-card{background:white;border-radius:18px;overflow:hidden;border:1px solid rgba(212,232,204,0.7);box-shadow:0 2px 12px var(--shadow);transition:transform 0.2s,box-shadow 0.2s;animation:popIn 0.4s cubic-bezier(0.22,1,0.36,1) both;cursor:pointer}
+@keyframes popIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+.plant-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px var(--shadow)}
+.plant-card img{width:100%;height:110px;object-fit:cover;background:var(--paper)}
+.plant-card-body{padding:10px 12px 12px}
+.plant-name{font-weight:500;font-size:13px;margin-bottom:5px}
+.diag-badge{display:inline-block;font-size:10px;font-weight:500;padding:3px 9px;border-radius:20px;background:rgba(192,82,42,0.1);color:var(--rust);border:1px solid rgba(192,82,42,0.2)}
+.diag-badge.healthy{background:rgba(74,124,69,0.1);color:var(--moss);border-color:rgba(74,124,69,0.2)}
+.msg-form h3{font-family:'Playfair Display',serif;font-size:19px;color:var(--leaf);margin-bottom:12px}
+.char-count{font-size:11px;color:#bbb;text-align:right;margin-top:4px}
+.modal-overlay{position:fixed;inset:0;background:rgba(26,31,26,0.6);backdrop-filter:blur(4px);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-box{background:white;border-radius:24px;padding:28px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.18);transform:translateY(20px);transition:transform 0.25s;position:relative}
+.modal-overlay.show .modal-box{transform:translateY(0)}
+.modal-img{width:100%;height:200px;object-fit:cover;border-radius:14px;margin-bottom:18px;border:1px solid var(--mist)}
+.modal-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:26px;cursor:pointer;color:#bbb;line-height:1;transition:color 0.15s}
+.modal-close:hover{color:var(--rust)}
+.modal-section{margin-bottom:16px}
+.modal-section-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--moss);margin-bottom:7px}
+.modal-text{font-size:14px;line-height:1.7;color:var(--ink)}
+
+/* ADMIN */
+body.admin-mode{background:var(--admin-bg)}
+.admin-wrap{max-width:1000px;margin:0 auto;padding:0 16px 60px}
+.admin-card{background:var(--admin-card);border-radius:20px;padding:24px;box-shadow:0 4px 24px rgba(0,0,0,0.3);border:1px solid var(--admin-border);margin-bottom:16px;color:var(--admin-text)}
+.admin-card h3{font-family:'Playfair Display',serif;font-size:18px;color:#7ec87a;margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.stat-box{background:rgba(74,124,69,0.1);border:1px solid var(--admin-border);border-radius:16px;padding:16px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:30px;color:#7ec87a;line-height:1}
+.stat-label{font-size:11px;color:#7aad76;margin-top:5px;letter-spacing:.5px;text-transform:uppercase}
+.online-list{display:flex;flex-direction:column;gap:8px}
+.online-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(74,124,69,0.08);border-radius:12px;border:1px solid var(--admin-border)}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;flex-shrink:0;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.online-email{font-size:13px;color:var(--admin-text);flex:1}
+.online-time{font-size:11px;color:#4a7c45}
+.admin-msg-list{display:flex;flex-direction:column;gap:8px}
+.admin-msg-item{background:rgba(0,0,0,0.2);border-radius:14px;padding:14px 16px;border:1px solid var(--admin-border);cursor:pointer;transition:all 0.2s}
+.admin-msg-item.unread{border-color:rgba(74,124,69,0.5);background:rgba(74,124,69,0.08)}
+.admin-msg-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;gap:8px}
+.admin-msg-from{font-weight:500;font-size:13px;color:#7ec87a}
+.admin-msg-date{font-size:11px;color:#4a7c45;white-space:nowrap}
+.admin-msg-body{font-size:13px;line-height:1.55;color:#8abf86}
+.unread-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;margin-right:6px}
+.chart-wrap{height:130px;display:flex;align-items:flex-end;gap:5px;margin-top:8px}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
+.chart-bar{width:100%;background:rgba(74,124,69,0.35);border-radius:4px 4px 0 0;border:1px solid rgba(74,124,69,0.5);transition:height .6s cubic-bezier(.22,1,.36,1);cursor:pointer;min-height:4px}
+.chart-bar:hover{background:rgba(74,124,69,0.65)}
+.chart-val{font-size:10px;color:#7ec87a;text-align:center;margin-bottom:2px}
+.chart-lbl{font-size:9px;color:#4a7c45;text-align:center;margin-top:4px}
+.premium-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(232,160,64,0.08);border-radius:12px;border:1px solid rgba(232,160,64,0.2)}
+.premium-email{font-size:13px;color:#e8a040;flex:1}
+.premium-date{font-size:11px;color:#7a5020}
+.admin-tab-row{display:flex;gap:4px;margin-bottom:16px;background:rgba(0,0,0,0.3);border-radius:14px;padding:4px;border:1px solid var(--admin-border)}
+.admin-tab-btn{flex:1;padding:9px 4px;border:none;border-radius:10px;background:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:#4a7c45;transition:all 0.18s;white-space:nowrap}
+.admin-tab-btn.active{background:rgba(74,124,69,0.2);color:#7ec87a;border:1px solid rgba(74,124,69,0.3)}
+.admin-input{background:#0f1a0e!important;border-color:var(--admin-border)!important;color:var(--admin-text)!important}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:white;border-radius:18px;padding:16px 40px 16px 22px;box-shadow:0 12px 40px rgba(0,0,0,0.14);border:1px solid var(--mist);max-width:380px;width:calc(100% - 40px);z-index:999;opacity:0;transition:all 0.35s cubic-bezier(0.22,1,0.36,1);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.toast-title{font-weight:600;color:var(--leaf);margin-bottom:4px;font-size:15px}
+.toast-body{font-size:13px;color:#666;line-height:1.5}
+.toast-close{position:absolute;top:10px;right:14px;background:none;border:none;cursor:pointer;font-size:20px;color:#aaa;line-height:1;padding:0}
+@media(max-width:540px){.card{padding:20px 16px}.stats-grid{grid-template-columns:1fr 1fr}.care-grid{grid-template-columns:1fr 1fr}.admin-tab-btn{font-size:10px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="mainWrap">
+
+  <div class="topbar">
+    <div class="logo" onclick="logoClick()" title="">
+      <div class="logo-icon">🌿</div>
+      <span>Bitki Dostu</span>
+    </div>
+    <div class="topbar-right">
+      <select class="lang-select" id="langSel" onchange="setLang(this.value)">
+        <option value="tr">🇹🇷 Türkçe</option>
+        <option value="en">🇺🇸 English</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="zh">🇨🇳 中文</option>
+      </select>
+      <button class="icon-btn hidden" id="logoutBtn" onclick="logout()">Çıkış</button>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginScreen" class="card">
+    <div class="login-hero">
+      <div class="login-icon">🌱</div>
+      <h2 id="txt_welcome">Bitki Dostu'na Hoş Geldin</h2>
+      <p id="txt_sub">Bitkilerinin sağlığını takip etmek için kayıt ol.</p>
+    </div>
+    <label class="field-label">E-posta</label>
+    <input type="email" id="inputEmail" placeholder="ornek@email.com" onkeydown="if(event.key==='Enter')register()">
+    <label class="field-label">Telefon (isteğe bağlı)</label>
+    <input type="tel" id="inputPhone" placeholder="+90 555 000 00 00">
+    <button class="btn btn-primary" id="btn_start" onclick="register()">Hemen Başla</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="hidden">
+    <div class="card">
+      <div class="dash-header">
+        <div>
+          <div class="dash-greeting" id="txt_hello">Merhaba 🌿</div>
+          <span id="memberBadge" class="membership-badge">🌱 Ücretsiz Üye (0/5)</span>
+        </div>
+      </div>
+      <div id="limitBarWrap" style="margin-top:14px;display:none;">
+        <div class="limit-bar"><div class="limit-fill" id="limitFill" style="width:0%"></div></div>
+      </div>
+      <button id="btn_upgrade" class="btn btn-premium hidden" onclick="processPayment()">⭐ Premium'a Geç (50 TL)</button>
+    </div>
+
+    <div class="tab-row">
+      <button class="tab-btn active" id="tab_plants" onclick="switchTab('plants')">🪴 Bitkilerim</button>
+      <button class="tab-btn" id="tab_analyze" onclick="switchTab('analyze')">🔬 Analiz</button>
+      <button class="tab-btn" id="tab_msg" onclick="switchTab('msg')">✉️ Mesaj</button>
+    </div>
+
+    <!-- PLANTS -->
+    <div id="pane_plants">
+      <div class="section-title">🪴 <span id="txt_myPlants">Benim Bitkilerim</span></div>
+      <div id="gallery" class="gallery"></div>
+      <p id="emptyMsg" style="color:var(--moss);font-size:14px;opacity:.7;display:none;margin-top:4px;">Henüz bitki eklemediniz. Analiz sekmesinden başlayın! 🌱</p>
+    </div>
+
+    <!-- ANALYZE -->
+    <div id="pane_analyze" class="hidden">
+      <div class="card analyze-card">
+        <h3 id="txt_analyzeTitle">🔬 Yeni Bitki Analiz Et</h3>
+        <div class="upload-zone">
+          <input type="file" id="plantImage" accept="image/*" onchange="previewImage()">
+          <div class="upload-icon">📷</div>
+          <div id="txt_upload" class="upload-text">Fotoğraf yüklemek için tıkla</div>
+          <div class="upload-sub">JPG, PNG · Maks 10MB</div>
+        </div>
+        <img id="preview" alt="Önizleme">
+        <label class="field-label" style="margin-top:14px;">Bitki adı (isteğe bağlı)</label>
+        <input type="text" id="plantNameInput" placeholder="Örn: Monstera, Kaktüs, Ficus...">
+        <button class="btn btn-primary" id="btn_analyze" onclick="analyze()">
+          <span id="analyzeLabel">🔬 Analizi Başlat</span>
+        </button>
+
+        <div class="diag-result" id="diagResult">
+          <h4 id="diagTitle">🌿 Analiz Sonucu</h4>
+          <div class="diag-section">
+            <div class="diag-section-title">🦠 Teşhis</div>
+            <div class="diag-text" id="diagDisease"></div>
+          </div>
+          <div class="diag-section">
+            <div class="diag-section-title">💊 Tedavi Önerisi</div>
+            <div class="diag-text" id="diagTreatment"></div>
+          </div>
+          <div class="diag-section">
+            <div class="diag-section-title">🌱 Bakım Durumu</div>
+            <div class="care-grid" id="careGrid"></div>
+          </div>
+          <div class="diag-section">
+            <div class="diag-section-title">📋 Detaylı Bakım Rehberi</div>
+            <div class="diag-text" id="diagCareGuide"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGE -->
+    <div id="pane_msg" class="hidden">
+      <div class="card">
+        <div class="msg-form">
+          <h3>✉️ Bize Mesaj Gönder</h3>
+          <p style="font-size:14px;color:var(--moss);margin-bottom:16px;">Sorularınızı veya sorunlarınızı iletebilirsiniz.</p>
+          <label class="field-label">Konu</label>
+          <input type="text" id="msgSubject" placeholder="Mesajınızın konusu">
+          <label class="field-label">Mesajınız</label>
+          <textarea id="msgBody" placeholder="Mesajınızı buraya yazın..." maxlength="500" oninput="document.getElementById('charCount').innerText=this.value.length"></textarea>
+          <div class="char-count"><span id="charCount">0</span>/500</div>
+          <button class="btn btn-primary" id="btn_send" onclick="sendMessage()">Mesajı Gönder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="hidden">
+  <div class="admin-wrap">
+    <div class="admin-card" style="margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="font-family:'Playfair Display',serif;font-size:22px;color:#7ec87a;flex:1;">🌿 Admin Paneli</div>
+        <span style="background:rgba(192,82,42,0.2);color:#e8a040;border:1px solid rgba(232,160,64,0.3);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;">ADMIN</span>
+        <button class="icon-btn" style="border-color:rgba(74,124,69,0.3);color:#4a7c45;" onclick="exitAdmin()">← Çıkış</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num" id="stat_total">0</div><div class="stat-label">Toplam Üye</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat_today">0</div><div class="stat-label">Bugün Giriş</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat_online">0</div><div class="stat-label">Çevrimiçi</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat_premium">0</div><div class="stat-label">Premium</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat_analyses">0</div><div class="stat-label">Toplam Analiz</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat_msgs">0</div><div class="stat-label">Okunmamış</div></div>
+    </div>
+
+    <div class="admin-tab-row">
+      <button class="admin-tab-btn active" id="atab_traffic" onclick="switchAdminTab('traffic')">📊 Trafik</button>
+      <button class="admin-tab-btn" id="atab_online" onclick="switchAdminTab('online')">🟢 Canlı</button>
+      <button class="admin-tab-btn" id="atab_messages" onclick="switchAdminTab('messages')">✉️ Mesajlar</button>
+      <button class="admin-tab-btn" id="atab_premium" onclick="switchAdminTab('premium')">⭐ Premium</button>
+      <button class="admin-tab-btn" id="atab_settings" onclick="switchAdminTab('settings')">⚙️ Ayarlar</button>
+    </div>
+
+    <div id="apane_traffic">
+      <div class="admin-card">
+        <h3>📊 Son 7 Günlük Trafik</h3>
+        <div class="chart-wrap" id="trafficChart"></div>
+      </div>
+      <div class="admin-card">
+        <h3>👥 Kayıtlı Kullanıcılar</h3>
+        <div id="allUsersList" style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;"></div>
+      </div>
+    </div>
+    <div id="apane_online" class="hidden">
+      <div class="admin-card">
+        <h3>🟢 Şu An Çevrimiçi <span style="font-size:12px;color:#4a7c45;">(son 5 dk)</span></h3>
+        <div class="online-list" id="onlineList"></div>
+        <p id="noOnline" style="color:#4a7c45;font-size:13px;display:none;">Şu an aktif kullanıcı yok.</p>
+      </div>
+    </div>
+    <div id="apane_messages" class="hidden">
+      <div class="admin-card">
+        <h3>✉️ Kullanıcı Mesajları</h3>
+        <div class="admin-msg-list" id="adminMsgList"></div>
+        <p id="noMsgs" style="color:#4a7c45;font-size:13px;display:none;">Henüz mesaj yok.</p>
+      </div>
+    </div>
+    <div id="apane_premium" class="hidden">
+      <div class="admin-card">
+        <h3>⭐ Premium Abonelikler</h3>
+        <div id="premiumLog" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <p id="noPremium" style="color:#4a7c45;font-size:13px;display:none;">Henüz premium üye yok.</p>
+      </div>
+    </div>
+    <div id="apane_settings" class="hidden">
+      <div class="admin-card">
+        <h3>📧 Bildirim Ayarları</h3>
+        <p style="font-size:13px;color:#7aad76;margin-bottom:14px;">Premium satış ve yeni mesajlarda e-posta alın. <a href="https://www.emailjs.com" target="_blank" style="color:#7ec87a;">EmailJS</a> (ücretsiz) kullanır.</p>
+        <label class="field-label" style="color:#4a7c45;">Bildirim E-postası</label>
+        <input type="email" id="notifEmail" class="admin-input" placeholder="sizin@email.com">
+        <label class="field-label" style="color:#4a7c45;">EmailJS — Service ID</label>
+        <input type="text" id="emailjsService" class="admin-input" placeholder="service_xxxxxxx">
+        <label class="field-label" style="color:#4a7c45;">EmailJS — Template ID</label>
+        <input type="text" id="emailjsTemplate" class="admin-input" placeholder="template_xxxxxxx">
+        <label class="field-label" style="color:#4a7c45;">EmailJS — Public Key</label>
+        <input type="text" id="emailjsKey" class="admin-input" placeholder="xxxxxxxxxxxxxxx">
+        <button class="btn btn-primary" style="margin-top:14px;" onclick="saveNotifSettings()">Ayarları Kaydet</button>
+        <div style="margin-top:22px;padding-top:20px;border-top:1px solid var(--admin-border);">
+          <h4 style="color:#7ec87a;font-size:15px;margin-bottom:10px;">🔑 Admin Şifresi</h4>
+          <input type="password" id="newAdminPass" class="admin-input" placeholder="Yeni şifre">
+          <button class="btn btn-primary" style="margin-top:10px;" onclick="changeAdminPass()">Şifreyi Güncelle</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANT MODAL -->
+<div class="modal-overlay" id="plantModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <img class="modal-img" id="modalImg" src="" alt="">
+    <h3 id="modalName" style="font-family:'Playfair Display',serif;color:var(--leaf);margin-bottom:16px;font-size:20px;"></h3>
+    <div class="modal-section"><div class="modal-section-title">🦠 Teşhis</div><div class="modal-text" id="modalDisease"></div></div>
+    <div class="modal-section"><div class="modal-section-title">💊 Tedavi</div><div class="modal-text" id="modalTreatment"></div></div>
+    <div class="modal-section"><div class="modal-section-title">🌱 Bakım Durumu</div><div class="care-grid" id="modalCareGrid"></div></div>
+    <div class="modal-section"><div class="modal-section-title">📋 Bakım Rehberi</div><div class="modal-text" id="modalCareGuide"></div></div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="modal-overlay" id="adminLoginModal">
+  <div class="modal-box" style="max-width:360px;">
+    <button class="modal-close" onclick="closeAdminModal()">×</button>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:44px;margin-bottom:10px;">🔐</div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--leaf);font-size:20px;">Admin Girişi</h3>
+    </div>
+    <label class="field-label">Şifre</label>
+    <input type="password" id="adminPassInput" placeholder="Admin şifresi" onkeydown="if(event.key==='Enter')tryAdminLogin()">
+    <button class="btn btn-primary" onclick="tryAdminLogin()">Giriş Yap</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <button class="toast-close" onclick="closeToast()">×</button>
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-body" id="toastBody"></div>
+</div>
+
+<script>
+var LANG={
+  tr:{welcome:"Bitki Dostu'na Hoş Geldin",sub:"Bitkilerinin sağlığını takip etmek için kayıt ol.",start:"Hemen Başla",analyzeTitle:"🔬 Yeni Bitki Analiz Et",analyze:"🔬 Analizi Başlat",analyzing:"Analiz ediliyor...",myPlants:"Benim Bitkilerim",premium:"⭐ Premium Üye",free:"🌱 Ücretsiz Üye",upgrade:"⭐ Premium'a Geç (50 TL)",limitMsg:"5 bitki limitine ulaştın! Premium ile sınırsız analiz yap.",upload:"Fotoğraf yüklemek için tıkla",payConfirm:"50 TL ödeme onaylansın mı?",emailReq:"Lütfen e-posta adresinizi girin."},
+  en:{welcome:"Welcome to Plant Friend",sub:"Register to track your plant health.",start:"Start Now",analyzeTitle:"🔬 Analyze New Plant",analyze:"🔬 Start Analysis",analyzing:"Analyzing...",myPlants:"My Plants",premium:"⭐ Premium Member",free:"🌱 Free Member",upgrade:"⭐ Upgrade ($1.50)",limitMsg:"5-plant limit reached! Go Premium for unlimited.",upload:"Click to upload a photo",payConfirm:"Confirm $1.50 payment?",emailReq:"Please enter your email."},
+  de:{welcome:"Willkommen bei Pflanzenfreund",sub:"Registriere dich.",start:"Jetzt starten",analyzeTitle:"🔬 Pflanze analysieren",analyze:"🔬 Analyse starten",analyzing:"Analysieren...",myPlants:"Meine Pflanzen",premium:"⭐ Premium",free:"🌱 Kostenlos",upgrade:"⭐ Premium (1,40€)",limitMsg:"Limit erreicht!",upload:"Klicken zum Hochladen",payConfirm:"1,40€ bestätigen?",emailReq:"E-Mail eingeben."},
+  ru:{welcome:"Добро пожаловать",sub:"Зарегистрируйтесь.",start:"Начать",analyzeTitle:"🔬 Анализ растения",analyze:"🔬 Начать анализ",analyzing:"Анализирую...",myPlants:"Мои растения",premium:"⭐ Премиум",free:"🌱 Бесплатно",upgrade:"⭐ Премиум (140₽)",limitMsg:"Лимит 5 растений.",upload:"Нажмите для загрузки",payConfirm:"Подтвердить 140₽?",emailReq:"Введите email."},
+  zh:{welcome:"欢迎来到植物之友",sub:"注册追踪植物健康。",start:"立即开始",analyzeTitle:"🔬 分析新植物",analyze:"🔬 开始分析",analyzing:"分析中...",myPlants:"我的植物",premium:"⭐ 高级会员",free:"🌱 免费",upgrade:"⭐ 升级(¥10)",limitMsg:"已达5株限制。",upload:"点击上传照片",payConfirm:"确认支付¥10?",emailReq:"请输入邮箱。"}
+};
+
+var user={email:"",isPremium:false,plants:[],lang:"tr"};
+var adminSettings={password:"admin2024",notifEmail:"",emailjsService:"",emailjsTemplate:"",emailjsKey:""};
+var appData={users:[],messages:[],traffic:{},onlineUsers:{},premiumLog:[]};
+var toastTimer=null,logoClicks=0,logoTimer=null;
+
+function L(){return LANG[user.lang]||LANG.en;}
+function setEl(id,v){var e=document.getElementById(id);if(e)e.innerText=v;}
+
+(function(){
+  try{
+    var u=localStorage.getItem("bd_user");if(u)user=JSON.parse(u);
+    var a=localStorage.getItem("bd_admin");if(a)adminSettings=Object.assign(adminSettings,JSON.parse(a));
+    var d=localStorage.getItem("bd_data");if(d)appData=Object.assign({users:[],messages:[],traffic:{},onlineUsers:{},premiumLog:[]},JSON.parse(d));
+    document.getElementById("langSel").value=user.lang||"tr";
+    applyLang();
+    if(user.email){trackVisit();showDashboard();}
+  }catch(e){}
+})();
+
+function save(){try{localStorage.setItem("bd_user",JSON.stringify(user));}catch(e){}}
+function saveData(){try{localStorage.setItem("bd_data",JSON.stringify(appData));}catch(e){}}
+function saveAdmin(){try{localStorage.setItem("bd_admin",JSON.stringify(adminSettings));}catch(e){}}
+
+function applyLang(){
+  var l=L();
+  setEl("txt_welcome",l.welcome);setEl("txt_sub",l.sub);setEl("btn_start",l.start);
+  setEl("txt_analyzeTitle",l.analyzeTitle);setEl("analyzeLabel",l.analyze);
+  setEl("txt_myPlants",l.myPlants);setEl("btn_upgrade",l.upgrade);setEl("txt_upload",l.upload);
+  document.getElementById("langSel").value=user.lang;
+}
+function setLang(l){user.lang=l;applyLang();save();renderGallery();}
+
+function register(){
+  var email=document.getElementById("inputEmail").value.trim();
+  if(!email){showToast("⚠️","E-posta adresinizi girin.");return;}
+  user.email=email;save();
+  if(!appData.users.find(function(u){return u.email===email;}))
+    appData.users.push({email:email,joined:new Date().toISOString(),isPremium:false,analyses:0});
+  saveData();trackVisit();showDashboard();
+}
+function logout(){
+  document.getElementById("logoutBtn").classList.add("hidden");
+  document.getElementById("loginScreen").classList.remove("hidden");
+  document.getElementById("dashboard").classList.add("hidden");
+}
+function trackVisit(){
+  var today=new Date().toISOString().slice(0,10);
+  if(!appData.traffic[today])appData.traffic[today]=[];
+  if(appData.traffic[today].indexOf(user.email)<0)appData.traffic[today].push(user.email);
+  appData.onlineUsers[user.email]=Date.now();saveData();
+}
+setInterval(function(){if(user.email){appData.onlineUsers[user.email]=Date.now();saveData();}},120000);
+
+function showDashboard(){
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("logoutBtn").classList.remove("hidden");
+  setEl("txt_hello","🌿 "+user.email.split("@")[0]);
+  applyLang();renderGallery();switchTab("plants");
+}
+function switchTab(t){
+  ["plants","analyze","msg"].forEach(function(x){
+    document.getElementById("pane_"+x).classList.add("hidden");
+    document.getElementById("tab_"+x).classList.remove("active");
+  });
+  document.getElementById("pane_"+t).classList.remove("hidden");
+  document.getElementById("tab_"+t).classList.add("active");
+}
+
+function previewImage(){
+  var f=document.getElementById("plantImage").files[0];if(!f)return;
+  var r=new FileReader();
+  r.onloadend=function(){
+    var img=document.getElementById("preview");
+    img.src=r.result;img.style.display="block";
+    document.getElementById("diagResult").style.display="none";
+  };
+  r.readAsDataURL(f);
+}
+
+// ─── ANALYZE: calls our secure backend function ───────────────
+function analyze(){
+  if(!user.isPremium&&user.plants.length>=5){
+    document.getElementById("btn_upgrade").classList.remove("hidden");
+    showToast("🌟",L().limitMsg);switchTab("plants");return;
+  }
+  var imgEl=document.getElementById("preview");
+  if(!imgEl.src||imgEl.style.display==="none"){showToast("⚠️","Önce fotoğraf yükleyin.");return;}
+
+  var btn=document.getElementById("btn_analyze"),label=document.getElementById("analyzeLabel");
+  btn.disabled=true;label.innerHTML='<span class="spinner"></span>'+L().analyzing;
+  document.getElementById("diagResult").style.display="none";
+
+  var b64=imgEl.src.split(",")[1];
+  var mm=(imgEl.src.match(/data:([^;]+);/)||[])[1]||"image/jpeg";
+
+  // POST to Netlify Function — API key never touches the browser
+  fetch("/.netlify/functions/analyze",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      imageBase64: b64,
+      mimeType: mm,
+      plantName: document.getElementById("plantNameInput").value.trim(),
+      lang: user.lang
+    })
+  })
+  .then(function(r){
+    if(!r.ok) return r.json().then(function(e){throw new Error(e.error||"Sunucu hatası");});
+    return r.json();
+  })
+  .then(function(res){
+    btn.disabled=false;label.innerText=L().analyze;
+    renderDiagResult(res);
+    var plant={name:res.plantName,diag:res.disease,treatment:res.treatment,
+      care:{sunlight:res.sunlight,water:res.water,fertilizer:res.fertilizer,soil:res.soil},
+      careGuide:res.careGuide,img:imgEl.src,date:new Date().toISOString()};
+    user.plants.push(plant);save();
+    var ud=appData.users.find(function(u){return u.email===user.email;});
+    if(ud)ud.analyses=(ud.analyses||0)+1;
+    saveData();renderGallery();
+    showToast("✅","\""+res.plantName+"\" kaydedildi.");
+    document.getElementById("plantImage").value="";
+  })
+  .catch(function(err){
+    btn.disabled=false;label.innerText=L().analyze;
+    showToast("❌ Hata",err.message);
+  });
+}
+
+function renderDiagResult(res){
+  setEl("diagTitle","🌿 "+res.plantName);
+  setEl("diagDisease",res.disease);
+  setEl("diagTreatment",res.treatment);
+  setEl("diagCareGuide",res.careGuide);
+  buildCareGrid("careGrid",res);
+  document.getElementById("diagResult").style.display="block";
+}
+function buildCareGrid(gridId,res){
+  var grid=document.getElementById(gridId);grid.innerHTML="";
+  [{k:"sunlight",i:"☀️",l:"Güneş"},{k:"water",i:"💧",l:"Su"},{k:"fertilizer",i:"🌿",l:"Gübre"},{k:"soil",i:"🪱",l:"Toprak"}].forEach(function(ci){
+    var d=res[ci.k]||{};var div=document.createElement("div");div.className="care-item "+(d.status||"good");
+    div.innerHTML='<div class="care-item-label">'+ci.i+" "+ci.l+'</div><div class="care-item-val">'+({danger:"⚠️ ",warn:"⚡ ",good:"✅ "}[d.status]||"✅ ")+(d.text||"—")+'</div>';
+    grid.appendChild(div);
+  });
+}
+
+var PH="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='110'%3E%3Crect width='200' height='110' fill='%23d4e8cc'/%3E%3Ctext x='50%25' y='55%25' font-size='30' text-anchor='middle' dominant-baseline='middle'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E";
+
+function renderGallery(){
+  var gallery=document.getElementById("gallery"),badge=document.getElementById("memberBadge"),lw=document.getElementById("limitBarWrap"),fill=document.getElementById("limitFill"),l=L(),c=user.plants.length;
+  if(user.isPremium){badge.className="membership-badge premium";badge.innerText=l.premium;lw.style.display="none";}
+  else{badge.className="membership-badge";badge.innerText=l.free+" ("+c+"/5)";lw.style.display="block";fill.style.width=Math.min(c/5*100,100)+"%";if(c>=5)document.getElementById("btn_upgrade").classList.remove("hidden");}
+  gallery.innerHTML="";var em=document.getElementById("emptyMsg");
+  if(!c){em.style.display="block";return;}em.style.display="none";
+  user.plants.forEach(function(p,i){
+    var card=document.createElement("div");card.className="plant-card";card.style.animationDelay=(i*.06)+"s";
+    var src=(p.img&&p.img.length>10)?p.img:PH;
+    var healthy=p.diag&&(p.diag.toLowerCase().includes("sağlıklı")||p.diag.toLowerCase().includes("healthy"));
+    card.innerHTML='<img src="'+src+'" alt="'+p.name+'" onerror="this.src=\''+PH+'\'">'+'<div class="plant-card-body"><div class="plant-name">'+p.name+'</div><div class="diag-badge'+(healthy?" healthy":"")+'">'+p.diag+'</div></div>';
+    card.onclick=function(){openPlantModal(p);};gallery.appendChild(card);
+  });
+}
+
+function openPlantModal(p){
+  document.getElementById("modalImg").src=(p.img&&p.img.length>10)?p.img:PH;
+  setEl("modalName",p.name);setEl("modalDisease",p.diag||"—");setEl("modalTreatment",p.treatment||"—");setEl("modalCareGuide",p.careGuide||"—");
+  if(p.care)buildCareGrid("modalCareGrid",p.care);else document.getElementById("modalCareGrid").innerHTML="";
+  document.getElementById("plantModal").classList.add("show");
+}
+function closeModal(){document.getElementById("plantModal").classList.remove("show");}
+
+function processPayment(){
+  if(confirm(L().payConfirm)){
+    user.isPremium=true;save();
+    var ud=appData.users.find(function(u){return u.email===user.email;});if(ud)ud.isPremium=true;
+    appData.premiumLog.push({email:user.email,date:new Date().toISOString(),amount:"50 TL"});saveData();
+    document.getElementById("btn_upgrade").classList.add("hidden");renderGallery();
+    showToast("⭐ Premium!","Üyeliğiniz aktif!");
+    sendNotif("⭐ Yeni Premium Üye","Kullanıcı: "+user.email+"\nTarih: "+new Date().toLocaleString("tr-TR"));
+  }
+}
+
+function sendMessage(){
+  var sub=document.getElementById("msgSubject").value.trim(),body=document.getElementById("msgBody").value.trim();
+  if(!sub||!body){showToast("⚠️","Konu ve mesaj alanlarını doldurun.");return;}
+  var btn=document.getElementById("btn_send");btn.disabled=true;btn.innerText="Gönderiliyor...";
+  appData.messages.unshift({id:Date.now(),from:user.email,subject:sub,body:body,date:new Date().toISOString(),read:false});
+  saveData();document.getElementById("msgSubject").value="";document.getElementById("msgBody").value="";document.getElementById("charCount").innerText="0";
+  setTimeout(function(){btn.disabled=false;btn.innerText="Mesajı Gönder";showToast("✅","Mesajınız iletildi!");sendNotif("✉️ Yeni Mesaj","Gönderen: "+user.email+"\nKonu: "+sub);},500);
+}
+
+function sendNotif(title,body){
+  var s=adminSettings;
+  if(!s.emailjsService||!s.emailjsTemplate||!s.emailjsKey||!s.notifEmail)return;
+  function go(){window.emailjs.init(s.emailjsKey);window.emailjs.send(s.emailjsService,s.emailjsTemplate,{to_email:s.notifEmail,subject:title,message:body,from_name:"Bitki Dostu"});}
+  if(!window.emailjs){var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js";sc.onload=go;document.head.appendChild(sc);}
+  else go();
+}
+
+function logoClick(){
+  logoClicks++;clearTimeout(logoTimer);
+  logoTimer=setTimeout(function(){logoClicks=0;},1500);
+  if(logoClicks>=5){logoClicks=0;document.getElementById("adminLoginModal").classList.add("show");setTimeout(function(){document.getElementById("adminPassInput").focus();},100);}
+}
+function closeAdminModal(){document.getElementById("adminLoginModal").classList.remove("show");document.getElementById("adminPassInput").value="";}
+function tryAdminLogin(){
+  if(document.getElementById("adminPassInput").value===adminSettings.password){closeAdminModal();enterAdmin();}
+  else{showToast("❌","Hatalı şifre.");document.getElementById("adminPassInput").value="";}
+}
+function enterAdmin(){
+  document.getElementById("mainWrap").classList.add("hidden");
+  document.getElementById("adminPanel").classList.remove("hidden");
+  document.body.classList.add("admin-mode");
+  document.getElementById("logoutBtn").classList.add("hidden");
+  loadAdminData();
+}
+function exitAdmin(){
+  document.getElementById("adminPanel").classList.add("hidden");
+  document.getElementById("mainWrap").classList.remove("hidden");
+  document.body.classList.remove("admin-mode");
+  if(user.email)document.getElementById("logoutBtn").classList.remove("hidden");
+}
+function loadAdminData(){
+  var today=new Date().toISOString().slice(0,10),now=Date.now();
+  var online=Object.keys(appData.onlineUsers).filter(function(e){return now-appData.onlineUsers[e]<300000;});
+  setEl("stat_total",appData.users.length);setEl("stat_today",(appData.traffic[today]||[]).length);
+  setEl("stat_online",online.length);setEl("stat_premium",appData.users.filter(function(u){return u.isPremium;}).length);
+  setEl("stat_analyses",appData.users.reduce(function(s,u){return s+(u.analyses||0);},0));
+  setEl("stat_msgs",(appData.messages||[]).filter(function(m){return !m.read;}).length);
+  renderTrafficChart();renderOnlineUsers();renderAdminMessages();renderPremiumLog();
+  document.getElementById("notifEmail").value=adminSettings.notifEmail||"";
+  document.getElementById("emailjsService").value=adminSettings.emailjsService||"";
+  document.getElementById("emailjsTemplate").value=adminSettings.emailjsTemplate||"";
+  document.getElementById("emailjsKey").value=adminSettings.emailjsKey||"";
+}
+function renderTrafficChart(){
+  var chart=document.getElementById("trafficChart");chart.innerHTML="";
+  var days=[],vals=[],mx=1;
+  for(var i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().slice(0,10));}
+  days.forEach(function(d){var v=(appData.traffic[d]||[]).length;vals.push(v);if(v>mx)mx=v;});
+  days.forEach(function(d,i){
+    var v=vals[i],pct=Math.max(v/mx*100,3);
+    var w=document.createElement("div");w.className="chart-bar-wrap";
+    w.innerHTML='<div class="chart-val">'+v+'</div><div class="chart-bar" style="height:'+pct+'%;width:100%;"></div><div class="chart-lbl">'+d.slice(5)+'</div>';
+    chart.appendChild(w);
+  });
+  var ul=document.getElementById("allUsersList");ul.innerHTML="";
+  appData.users.forEach(function(u){
+    var div=document.createElement("div");
+    div.style.cssText="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(74,124,69,0.08);border-radius:10px;border:1px solid var(--admin-border);";
+    div.innerHTML='<span style="font-size:13px;color:#7ec87a;">'+u.email+'</span><span style="font-size:11px;color:#4a7c45;">'+(u.isPremium?"⭐ Premium":"🌱 Ücretsiz")+" · "+(u.analyses||0)+" analiz</span>";
+    ul.appendChild(div);
+  });
+  if(!appData.users.length)ul.innerHTML='<p style="color:#4a7c45;font-size:13px;">Henüz kullanıcı yok.</p>';
+}
+function renderOnlineUsers(){
+  var list=document.getElementById("onlineList"),no=document.getElementById("noOnline");
+  list.innerHTML="";var now=Date.now();
+  var online=Object.keys(appData.onlineUsers).filter(function(e){return now-appData.onlineUsers[e]<300000;});
+  if(!online.length){no.style.display="block";return;}no.style.display="none";
+  online.forEach(function(email){
+    var ago=Math.floor((now-appData.onlineUsers[email])/60000);
+    var div=document.createElement("div");div.className="online-item";
+    div.innerHTML='<div class="online-dot"></div><div class="online-email">'+email+'</div><div class="online-time">'+(ago===0?"şimdi":ago+" dk önce")+'</div>';
+    list.appendChild(div);
+  });
+}
+function renderAdminMessages(){
+  var list=document.getElementById("adminMsgList"),no=document.getElementById("noMsgs");
+  list.innerHTML="";var msgs=appData.messages||[];
+  if(!msgs.length){no.style.display="block";return;}no.style.display="none";
+  msgs.forEach(function(m){
+    var div=document.createElement("div");div.className="admin-msg-item"+(m.read?"":" unread");
+    div.innerHTML='<div class="admin-msg-header"><div class="admin-msg-from">'+(m.read?"":'<span class="unread-dot"></span>')+m.from+'</div><div class="admin-msg-date">'+new Date(m.date).toLocaleString("tr-TR")+'</div></div>'+
+      '<div style="font-size:11px;color:#7ec87a;margin-bottom:5px;font-weight:500;">'+m.subject+'</div><div class="admin-msg-body">'+m.body+'</div>';
+    div.onclick=function(){m.read=true;saveData();div.classList.remove("unread");setEl("stat_msgs",(appData.messages||[]).filter(function(x){return !x.read;}).length);};
+    list.appendChild(div);
+  });
+}
+function renderPremiumLog(){
+  var list=document.getElementById("premiumLog"),no=document.getElementById("noPremium");
+  list.innerHTML="";var logs=appData.premiumLog||[];
+  if(!logs.length){no.style.display="block";return;}no.style.display="none";
+  logs.forEach(function(l){
+    var div=document.createElement("div");div.className="premium-item";
+    div.innerHTML='<div style="font-size:16px;">⭐</div><div class="premium-email">'+l.email+'</div><div class="premium-date">'+new Date(l.date).toLocaleString("tr-TR")+(l.amount?" · "+l.amount:"")+'</div>';
+    list.appendChild(div);
+  });
+}
+function switchAdminTab(t){
+  ["traffic","online","messages","premium","settings"].forEach(function(x){
+    document.getElementById("apane_"+x).classList.add("hidden");document.getElementById("atab_"+x).classList.remove("active");
+  });
+  document.getElementById("apane_"+t).classList.remove("hidden");document.getElementById("atab_"+t).classList.add("active");
+}
+function saveNotifSettings(){
+  adminSettings.notifEmail=document.getElementById("notifEmail").value.trim();
+  adminSettings.emailjsService=document.getElementById("emailjsService").value.trim();
+  adminSettings.emailjsTemplate=document.getElementById("emailjsTemplate").value.trim();
+  adminSettings.emailjsKey=document.getElementById("emailjsKey").value.trim();
+  saveAdmin();showToast("✅","Bildirim ayarları kaydedildi!");
+}
+function changeAdminPass(){
+  var p=document.getElementById("newAdminPass").value;
+  if(p.length<4){showToast("⚠️","En az 4 karakter olmalı.");return;}
+  adminSettings.password=p;saveAdmin();document.getElementById("newAdminPass").value="";showToast("✅","Şifre güncellendi!");
+}
+function showToast(title,body){
+  setEl("toastTitle",title);setEl("toastBody",body);
+  var t=document.getElementById("toast");t.classList.add("show");
+  clearTimeout(toastTimer);toastTimer=setTimeout(closeToast,5000);
+}
+function closeToast(){document.getElementById("toast").classList.remove("show");}
+document.getElementById("plantModal").addEventListener("click",function(e){if(e.target===this)closeModal();});
+document.getElementById("adminLoginModal").addEventListener("click",function(e){if(e.target===this)closeAdminModal();});
+</script>
+</body>
+</html>
