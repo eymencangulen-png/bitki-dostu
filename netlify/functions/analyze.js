@@ -3,64 +3,62 @@ exports.handler = async function(event) {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
-  if (!CLAUDE_API_KEY) {
-    return { statusCode: 500, body: JSON.stringify({ error: "API anahtarı sunucuda tanımlı değil." }) };
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_API_KEY) {
+    return { statusCode: 500, body: JSON.stringify({ error: "API anahtari tanimli degil." }) };
   }
 
   let body;
   try { body = JSON.parse(event.body); }
-  catch(e) { return { statusCode: 400, body: JSON.stringify({ error: "Geçersiz istek." }) }; }
+  catch(e) { return { statusCode: 400, body: JSON.stringify({ error: "Gecersiz istek." }) }; }
 
   const { imageBase64, mimeType, plantName, lang } = body;
   if (!imageBase64 || !mimeType) {
-    return { statusCode: 400, body: JSON.stringify({ error: "Fotoğraf eksik." }) };
+    return { statusCode: 400, body: JSON.stringify({ error: "Fotograf eksik." }) };
   }
 
-  const langLabel = { tr: "Türkçe", en: "English", de: "Deutsch", ru: "Русский", zh: "中文" }[lang] || "Türkçe";
-  const prompt = `Sen uzman bir bitki doktoru ve botanistsin. Fotoğraftaki bitkiyi analiz et.
-Kullanıcı bitki adı olarak "${plantName || "bilinmeyen"}" yazdı.
+  const langLabel = { tr:"Turkce", en:"English", de:"Deutsch", ru:"Russky", zh:"Chinese" }[lang] || "Turkce";
 
-Sadece JSON döndür, başka hiçbir şey yazma:
+  const prompt = `Sen uzman bir bitki doktoru ve botanistsin. Fotograftaki bitkiyi analiz et.
+Kullanici bitki adi olarak "${plantName || "bilinmeyen"}" yazdi.
+Sadece JSON dondur, baska hicbir sey yazma:
 {
-  "plantName": "bitkinin doğru adı",
-  "disease": "hastalık/sorun adı veya Sağlıklı",
-  "treatment": "adım adım tedavi veya bakım önerisi",
-  "sunlight": {"status":"good|warn|danger","text":"güneş durumu ve öneri"},
-  "water": {"status":"good|warn|danger","text":"su durumu ve öneri"},
-  "fertilizer": {"status":"good|warn|danger","text":"gübre durumu ve öneri"},
+  "plantName": "bitkinin dogru adi",
+  "disease": "hastalik/sorun adi veya Saglikli",
+  "treatment": "adim adim tedavi veya bakim onerisi",
+  "sunlight": {"status":"good|warn|danger","text":"gunes durumu ve oneri"},
+  "water": {"status":"good|warn|danger","text":"su durumu ve oneri"},
+  "fertilizer": {"status":"good|warn|danger","text":"gubre durumu ve oneri"},
   "soil": {"status":"good|warn|danger","text":"toprak durumu"},
-  "careGuide": "bu bitkiye özel 4-5 maddelik bakım rehberi"
+  "careGuide": "bu bitkiye ozel 4-5 maddelik bakim rehberi"
 }
-Yanıtı ${langLabel} dilinde ver.`;
+Yaniti ${langLabel} dilinde ver.`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": CLAUDE_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 1200,
-        messages: [{
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: mimeType, data: imageBase64 } },
-            { type: "text", text: prompt }
-          ]
-        }]
-      })
-    });
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { inline_data: { mime_type: mimeType, data: imageBase64 } },
+              { text: prompt }
+            ]
+          }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 1200 }
+        })
+      }
+    );
 
     const data = await response.json();
     if (data.error) {
       return { statusCode: 500, body: JSON.stringify({ error: data.error.message }) };
     }
 
-    const text = data.content[0].text.trim().replace(/```json|```/g, "").trim();
+    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    text = text.trim().replace(/```json|```/g, "").trim();
     const result = JSON.parse(text);
 
     return {
@@ -69,6 +67,4 @@ Yanıtı ${langLabel} dilinde ver.`;
       body: JSON.stringify(result)
     };
   } catch(err) {
-    return { statusCode: 500, body: JSON.stringify({ error: "Sunucu hatası: " + err.message }) };
-  }
-};
+    return { statusCode: 500, body: JSON.stringify({ error: "Sunucu hatasi: " + err.message }) };
