@@ -58,16 +58,19 @@ exports.handler = async function(event) {
     const data = await response.json();
 
     // HATA YÖNETİMİ: Kota aşımı kontrolü
+    // HATA YÖNETİMİ: Kullanıcı dostu mesajlar
     if (data.error) {
       if (data.error.code === 429) {
         return { 
           statusCode: 429, 
-          body: JSON.stringify({ error: "Yapay zekamız şu an çok yoğun. Lütfen 30 saniye sonra tekrar deneyin." }) 
+          body: JSON.stringify({ error: "Bitki uzmanlarımız şu an diğer saksılarla ilgileniyor. Teşhis için lütfen 30 saniye sonra tekrar deneyin." }) 
         };
       }
-      return { statusCode: 500, body: JSON.stringify({ error: "Analiz sırasında bir sorun oluştu." }) };
+      return { 
+        statusCode: 500, 
+        body: JSON.stringify({ error: "Bahçemizde küçük bir bakım çalışması var, lütfen birazdan tekrar deneyin." }) 
+      };
     }
-
     // JSON TEMİZLEME (Bazı durumlarda Gemini markdown ekleyebiliyor)
     let text = data.candidates[0].content.parts[0].text;
     text = text.replace(/```json|```/g, "").trim();
