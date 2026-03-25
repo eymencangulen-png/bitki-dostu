@@ -1,123 +1,33 @@
-const fetch = require("node-fetch");
-
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  const apiKey = process.env.GEMINI_API_KEY;
+  
+  if (!apiKey) {
+    return res.status(500).json({ error: "Vercel'de GEMINI_API_KEY eksik!" });
   }
 
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  const { imageBase64, mimeType, plantName, lang } = req.body;
-
-  if (!GEMINI_API_KEY) {
-    return res.status(500).json({ error: "API key tanımlı değil" });
-  }
-
-  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-  const prompt = `
-Sen uzman bir botanikçisin.
-
-SADECE geçerli JSON döndür. Başka hiçbir açıklama yazma.
-
-Format:
-{
-  "plantName": "string",
-  "disease": "string",
-  "treatment": "string"
-}
-
-Eğer emin değilsen "Bilinmiyor" yaz.
-
-Görseli analiz et ve sonucu ver.
-`;
+  const { imageBase64, mimeType } = req.body;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
   try {
     const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: imageBase64,
-                },
-              },
-              {
-                text: prompt,
-              },
-            ],
-          },
-        ],
-      }),
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: mimeType, data: imageBase64 } },
+            { text: "Bitkiyi teşhis et ve şu JSON formatında cevap ver: {\"plantName\": \"...\", \"disease\": \"...\", \"treatment\": \"...\"}" }
+          ]
+        }]
+      })
     });
 
     const data = await response.json();
+    if (data.error) return res.status(500).json({ error: data.error.message });
 
-    // DEBUG (istersen kaldırabilirsin)
-    console.log("GEMINI RESPONSE:", JSON.stringify(data, null, 2));
-
-    // 🔴 API hata kontrolü
-    if (data.error) {
-      return res.status(500).json({
-        error: "Google API Hatası",
-        detail: data.error.message,
-      });
-    }
-
-    // 🔴 candidates kontrolü
-    if (!data.candidates || data.candidates.length === 0) {
-      return res.status(500).json({
-        error: "Boş response (candidates yok)",
-        full: data,
-      });
-    }
-
-    const parts = data.candidates[0]?.content?.parts;
-
-    if (!parts || parts.length === 0) {
-      return res.status(500).json({
-        error: "Content parts boş",
-        full: data,
-      });
-    }
-
-    // 🔴 text part bul
-    const textPart = parts.find((p) => p.text);
-
-    if (!textPart) {
-      return res.status(500).json({
-        error: "Text response yok",
-        full: data,
-      });
-    }
-
-    // 🔴 temizle
-    const cleanText = textPart.text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
-
-    // 🔴 JSON parse güvenli
-    let parsed;
-    try {
-      parsed = JSON.parse(cleanText);
-    } catch (err) {
-      return res.status(500).json({
-        error: "JSON parse hatası",
-        raw: cleanText,
-      });
-    }
-
-    return res.status(200).json(parsed);
+    const cleanText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+    return res.status(200).json(JSON.parse(cleanText));
   } catch (err) {
-    return res.status(500).json({
-      error: "Sistem hatası",
-      message: err.message,
-    });
+    return res.status(500).json({ error: "Sistem hatası: " + err.message });
   }
 }
