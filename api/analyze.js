@@ -1,12 +1,11 @@
 export default async function handler(req, res) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  
-  if (!apiKey) {
-    return res.status(500).json({ error: "Vercel'de GEMINI_API_KEY eksik!" });
-  }
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
+  const apiKey = process.env.GEMINI_API_KEY;
   const { imageBase64, mimeType } = req.body;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
+  // Google'ın en güncel ve kararlı (v1) bağlantı yolu
+  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   try {
     const response = await fetch(url, {
@@ -16,18 +15,22 @@ export default async function handler(req, res) {
         contents: [{
           parts: [
             { inline_data: { mime_type: mimeType, data: imageBase64 } },
-            { text: "Bitkiyi teşhis et ve şu JSON formatında cevap ver: {\"plantName\": \"...\", \"disease\": \"...\", \"treatment\": \"...\"}" }
+            { text: "Bu bitkiyi teşhis et. Yanıtı sadece şu JSON formatında ver: {\"plantName\": \"...\", \"disease\": \"...\", \"treatment\": \"...\"}" }
           ]
         }]
       })
     });
 
     const data = await response.json();
-    if (data.error) return res.status(500).json({ error: data.error.message });
+    
+    // Hata ayıklama: Google'dan gelen hata mesajını doğrudan göster
+    if (data.error) {
+      return res.status(500).json({ error: "Google Hatası: " + data.error.message });
+    }
 
-    const cleanText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
-    return res.status(200).json(JSON.parse(cleanText));
+    const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+    return res.status(200).json(JSON.parse(text));
   } catch (err) {
-    return res.status(500).json({ error: "Sistem hatası: " + err.message });
+    return res.status(500).json({ error: "Sistem Hatası: " + err.message });
   }
 }
