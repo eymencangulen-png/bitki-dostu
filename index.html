@@ -712,3 +712,29 @@ document.getElementById("adminLoginModal").addEventListener("click",function(e){
 </script>
 </body>
 </html>
+<script>
+// Eski fonksiyonu Vercel'e göre güncelliyoruz
+window.analyzePlant = async function(imageBase64, mimeType) {
+    try {
+        const response = await fetch('/api/analyze', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                imageBase64, 
+                mimeType, 
+                plantName: document.getElementById('plantNameInput')?.value || '',
+                lang: 'tr' 
+            })
+        });
+
+        const result = await response.json();
+        if (result.error) {
+            alert(result.error);
+            return;
+        }
+        displayResult(result);
+    } catch (err) {
+        console.error("Hata:", err);
+    }
+};
+</script>
