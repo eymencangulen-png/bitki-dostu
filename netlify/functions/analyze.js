@@ -3,67 +3,76 @@ exports.handler = async function(event) {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  var GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   if (!GEMINI_API_KEY) {
-    return { statusCode: 500, body: JSON.stringify({ error: "API key missing" }) };
+    return { statusCode: 500, body: JSON.stringify({ error: "Sistem hatası: API anahtarı eksik." }) };
   }
 
-  var body;
+  let body;
   try { body = JSON.parse(event.body); }
-  catch(e) { return { statusCode: 400, body: JSON.stringify({ error: "Invalid request" }) }; }
+  catch(e) { return { statusCode: 400, body: JSON.stringify({ error: "Geçersiz istek." }) }; }
 
-  var imageBase64 = body.imageBase64;
-  var mimeType = body.mimeType;
-  var plantName = body.plantName || "unknown";
-  var lang = body.lang || "tr";
+  const { imageBase64, mimeType, plantName = "Bilinmiyor", lang = "tr" } = body;
 
   if (!imageBase64 || !mimeType) {
-    return { statusCode: 400, body: JSON.stringify({ error: "Image missing" }) };
+    return { statusCode: 400, body: JSON.stringify({ error: "Lütfen bir bitki fotoğrafı yükleyin." }) };
   }
 
-  var langMap = { tr: "Turkce", en: "English", de: "Deutsch", ru: "Russky", zh: "Chinese" };
-  var langLabel = langMap[lang] || "Turkce";
+  const langMap = { tr: "Turkish", en: "English", de: "German", ru: "Russian", zh: "Chinese" };
+  const langLabel = langMap[lang] || "Turkish";
 
-  var prompt = "Sen uzman bir bitki doktoru ve botanistsin. Fotograftaki bitkiyi analiz et. "
-    + "Kullanici bitki adi olarak [" + plantName + "] yazdi. "
-    + "Sadece asagidaki JSON formatinda yanit ver, baska hicbir sey yazma: "
-    + '{"plantName":"bitkinin adi","disease":"hastalik veya Saglikli","treatment":"tedavi onerisi",'
-    + '"sunlight":{"status":"good","text":"gunes oneri"},'
-    + '"water":{"status":"good","text":"su oneri"},'
-    + '"fertilizer":{"status":"good","text":"gubre oneri"},'
-    + '"soil":{"status":"good","text":"toprak durumu"},'
-    + '"careGuide":"bakim rehberi"} '
-    + "status degerleri: good, warn veya danger olabilir. "
-    + "Yaniti " + langLabel + " dilinde ver.";
+  // PROMPT OPTİMİZASYONU: Daha derin analiz ve JSON garantisi
+  const prompt = `Sen dünya çapında tanınan uzman bir bitki patoloğu ve botanikçisin. 
+    Kullanıcı bu bitki için "${plantName}" ismini verdi. Fotoğrafı dikkatle incele. 
+    Yanıtını sadece ve sadece aşağıdaki JSON formatında ver, asla açıklama metni ekleme.
+    JSON yapısı:
+    {
+      "plantName": "Bitkinin tam bilimsel ve yaygın adı",
+      "disease": "Hastalık adı veya 'Sağlıklı' durumu",
+      "treatment": "Adım adım tedavi planı veya koruma önerisi",
+      "sunlight": {"status": "good/warn/danger", "text": "Işık ihtiyacı detayı"},
+      "water": {"status": "good/warn/danger", "text": "Sulama rutini önerisi"},
+      "fertilizer": {"status": "good/warn/danger", "text": "Gübreleme ihtiyacı"},
+      "soil": {"status": "good/warn/danger", "text": "Toprak ve saksı durumu"},
+      "careGuide": "Bu bitki için genel uzun vadeli bakım rehberi"
+    }
+    Önemli: Yanıt dili mutlaka ${langLabel} olmalı.`;
 
   try {
-    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-    var reqBody = {
-      contents: [{
-        parts: [
-          { inline_data: { mime_type: mimeType, data: imageBase64 } },
-          { text: prompt }
-        ]
-      }],
-      generationConfig: { temperature: 0.3, maxOutputTokens: 1200 }
-    };
-
-    var response = await fetch(url, {
+    const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(reqBody)
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: mimeType, data: imageBase64 } },
+            { text: prompt }
+          ]
+        }],
+        generationConfig: { temperature: 0.2, maxOutputTokens: 1000 } // Sıcaklığı düşürdüm (daha tutarlı yanıt)
+      })
     });
 
-    var data = await response.json();
+    const data = await response.json();
 
+    // HATA YÖNETİMİ: Kota aşımı kontrolü
     if (data.error) {
-      return { statusCode: 500, body: JSON.stringify({ error: data.error.message }) };
+      if (data.error.code === 429) {
+        return { 
+          statusCode: 429, 
+          body: JSON.stringify({ error: "Yapay zekamız şu an çok yoğun. Lütfen 30 saniye sonra tekrar deneyin." }) 
+        };
+      }
+      return { statusCode: 500, body: JSON.stringify({ error: "Analiz sırasında bir sorun oluştu." }) };
     }
 
-    var text = data.candidates[0].content.parts[0].text;
-    text = text.trim().replace(/```json/g, "").replace(/```/g, "").trim();
-    var result = JSON.parse(text);
+    // JSON TEMİZLEME (Bazı durumlarda Gemini markdown ekleyebiliyor)
+    let text = data.candidates[0].content.parts[0].text;
+    text = text.replace(/```json|```/g, "").trim();
+    
+    const result = JSON.parse(text);
 
     return {
       statusCode: 200,
@@ -72,6 +81,6 @@ exports.handler = async function(event) {
     };
 
   } catch(err) {
-    return { statusCode: 500, body: JSON.stringify({ error: "Server error: " + err.message }) };
+    return { statusCode: 500, body: JSON.stringify({ error: "Sunucu hatası: " + err.message }) };
   }
 };
