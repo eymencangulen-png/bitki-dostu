@@ -39,22 +39,18 @@ exports.handler = async function(event) {
     + "Yaniti " + langLabel + " dilinde ver.";
 
   try {
-    var url = "https://generativelanguage.googleapis.com/v1beta/models/Gemini 2.0 Flash:generateContent?key=" + GEMINI_API_KEY;
-
-    var reqBody = {
-      contents: [{
-        parts: [
-          { inline_data: { mime_type: mimeType, data: imageBase64 } },
-          { text: prompt }
-        ]
-      }],
-      generationConfig: { temperature: 0.3, maxOutputTokens: 1200 }
-    };
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
 
     var response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(reqBody)
+      body: JSON.stringify({
+        contents: [{ parts: [
+          { inline_data: { mime_type: mimeType, data: imageBase64 } },
+          { text: prompt }
+        ]}],
+        generationConfig: { temperature: 0.3, maxOutputTokens: 1200 }
+      })
     });
 
     var data = await response.json();
