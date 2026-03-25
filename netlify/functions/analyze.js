@@ -39,7 +39,7 @@ exports.handler = async function(event) {
     + "Yaniti " + langLabel + " dilinde ver.";
 
   try {
-    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=" + GEMINI_API_KEY;
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/Gemini 2.0 Flash:generateContent?key=" + GEMINI_API_KEY;
 
     var reqBody = {
       contents: [{
