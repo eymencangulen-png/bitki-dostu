@@ -18,21 +18,22 @@ exports.handler = async function(event) {
   }
 
   const langLabel = { tr:"Turkce", en:"English", de:"Deutsch", ru:"Russky", zh:"Chinese" }[lang] || "Turkce";
+  const pname = plantName || "bilinmeyen";
 
-  const prompt = `Sen uzman bir bitki doktoru ve botanistsin. Fotograftaki bitkiyi analiz et.
-Kullanici bitki adi olarak "${plantName || "bilinmeyen"}" yazdi.
-Sadece JSON dondur, baska hicbir sey yazma:
-{
-  "plantName": "bitkinin dogru adi",
-  "disease": "hastalik/sorun adi veya Saglikli",
-  "treatment": "adim adim tedavi veya bakim onerisi",
-  "sunlight": {"status":"good|warn|danger","text":"gunes durumu ve oneri"},
-  "water": {"status":"good|warn|danger","text":"su durumu ve oneri"},
-  "fertilizer": {"status":"good|warn|danger","text":"gubre durumu ve oneri"},
-  "soil": {"status":"good|warn|danger","text":"toprak durumu"},
-  "careGuide": "bu bitkiye ozel 4-5 maddelik bakim rehberi"
-}
-Yaniti ${langLabel} dilinde ver.`;
+  const prompt = "Sen uzman bir bitki doktoru ve botanistsin. Fotograftaki bitkiyi analiz et.\n"
+    + "Kullanici bitki adi olarak '" + pname + "' yazdi.\n\n"
+    + "Sadece JSON dondur, baska hicbir sey yazma:\n"
+    + "{\n"
+    + '  "plantName": "bitkinin dogru adi",\n'
+    + '  "disease": "hastalik/sorun adi veya Saglikli",\n'
+    + '  "treatment": "adim adim tedavi veya bakim onerisi",\n'
+    + '  "sunlight": {"status":"good","text":"gunes durumu ve oneri"},\n'
+    + '  "water": {"status":"good","text":"su durumu ve oneri"},\n'
+    + '  "fertilizer": {"status":"good","text":"gubre durumu ve oneri"},\n'
+    + '  "soil": {"status":"good","text":"toprak durumu"},\n'
+    + '  "careGuide": "bu bitkiye ozel 4-5 maddelik bakim rehberi"\n'
+    + "}\n"
+    + "status alanlari icin good, warn veya danger kullan. Yaniti " + langLabel + " dilinde ver.";
 
   try {
     const response = await fetch(
@@ -53,11 +54,12 @@ Yaniti ${langLabel} dilinde ver.`;
     );
 
     const data = await response.json();
+
     if (data.error) {
       return { statusCode: 500, body: JSON.stringify({ error: data.error.message }) };
     }
 
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    let text = data.candidates[0].content.parts[0].text || "";
     text = text.trim().replace(/```json|```/g, "").trim();
     const result = JSON.parse(text);
 
@@ -68,3 +70,5 @@ Yaniti ${langLabel} dilinde ver.`;
     };
   } catch(err) {
     return { statusCode: 500, body: JSON.stringify({ error: "Sunucu hatasi: " + err.message }) };
+  }
+};
