@@ -490,7 +490,7 @@ function analyze(){
   var mm=(imgEl.src.match(/data:([^;]+);/)||[])[1]||"image/jpeg";
 
   // POST to Netlify Function — API key never touches the browser
-  fetch("/.netlify/functions/analyze",{
+  fetch("/api/analyze",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
