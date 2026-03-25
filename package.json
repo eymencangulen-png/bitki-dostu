@@ -1,0 +1,12 @@
+{
+  "name": "bitki-dostu",
+  "version": "1.0.0",
+  "description": "Bitki Hastalık Teşhis Uygulaması",
+  "main": "index.html",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  },
+  "scripts": {
+    "build": "echo 'No build step required'"
+  }
+}
